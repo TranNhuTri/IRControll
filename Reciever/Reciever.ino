@@ -1,13 +1,14 @@
-#define IRBitLength 32
+#define IRBitLength 10
 #define bit_0 500 // bit 1 space threshold (microseconds)
 #define bit_1 1000 // bit 0 space threshold (microseconds)
 
-int input = 8, addr = 215;
+int input = 8, addr = 215, fanPin = 9;
 bool debug = true;
 
 void setup() {
   Serial.begin(9600);
   pinMode(input, INPUT);
+  pinMode(fanPin, OUTPUT);
 }
 
 void debugLog(String title, int value) {
@@ -61,29 +62,19 @@ int convertBitsToInt(int bits[], int startIndex, int endIndex) {
   return res;
 }
 
-void getData(int& address, int& speedLeft, int& speedRight) {
-  int pulses[IRBitLength], bits[IRBitLength];
-  do {}
+int getData() {
+  int bits[IRBitLength], pulses[IRBitLength];
+  do{}
   while(pulseIn(input, LOW) < 9);
   
   readPulse(pulses);
   convertPulseToBits(bits, pulses);
-  address = convertBitsToInt(bits, 0, 7);
-  speedLeft = convertBitsToInt(bits, 8, 19);
-  speedRight = convertBitsToInt(bits, 20, 31);
+  int data = convertBitsToInt(bits, 0, 9);
+  return data;
 }
 
 void loop() {
-//  int value = digitalRead(input);
-//  if(value == 0)
-//    Serial.println("oke");
-  int address, speedLeft, speedRight;
-  getData(address, speedLeft, speedRight);
-  if(address != addr)
-    return;
-  if(debug) {
-    debugLog("Address: ", address);
-    debugLog("Speed left: ", speedLeft);
-    debugLog("Speed right: ", speedRight);
-  }
+//  int data = getData();
+//  debugLog("Data: ", data);
+  digitalWrite(fanPin, HIGH);
 }
